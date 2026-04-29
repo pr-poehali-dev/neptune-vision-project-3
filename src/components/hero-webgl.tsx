@@ -32,7 +32,6 @@ const Scene = () => {
       uniform float uTime;
       varying vec2 vUv;
 
-      // Simple noise function
       float random(vec2 st) {
         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
       }
@@ -50,16 +49,11 @@ const Scene = () => {
 
       void main() {
         vec2 uv = vUv;
-
-        // Depth-based displacement
         float depth = texture2D(uDepthMap, uv).r;
         vec2 displacement = depth * uPointer * 0.01;
         vec2 distortedUv = uv + displacement;
-
-        // Base texture
         vec4 baseColor = texture2D(uTexture, distortedUv);
 
-        // Create scanning effect
         float aspect = ${WIDTH}.0 / ${HEIGHT}.0;
         vec2 tUv = vec2(uv.x * aspect, uv.y);
         vec2 tiling = vec2(120.0);
@@ -69,13 +63,8 @@ const Scene = () => {
         float dist = length(tiledUv);
         float dot = smoothstep(0.5, 0.49, dist) * brightness;
 
-        // Flow effect based on progress
         float flow = 1.0 - smoothstep(0.0, 0.02, abs(depth - uProgress));
-
-        // Red scanning overlay
         vec3 mask = vec3(dot * flow * 10.0, 0.0, 0.0);
-
-        // Combine effects
         vec3 final = baseColor.rgb + mask;
 
         gl_FragColor = vec4(final, 1.0);
@@ -114,8 +103,8 @@ const Scene = () => {
 }
 
 export const Hero3DWebGL = () => {
-  const titleWords = "Synapse AI".split(" ")
-  const subtitle = "Нейроинтерфейсы нового поколения."
+  const titleWords = "Инженер по Автоматизации".split(" ")
+  const subtitle = "Профессия будущего — уже сегодня."
   const [visibleWords, setVisibleWords] = useState(0)
   const [subtitleVisible, setSubtitleVisible] = useState(false)
   const [delays, setDelays] = useState<number[]>([])
@@ -147,7 +136,7 @@ export const Hero3DWebGL = () => {
 
       <div className="h-screen uppercase items-center w-full absolute z-[60] pointer-events-none px-10 flex justify-center flex-col">
         <div className="text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl font-extrabold font-orbitron">
-          <div className="flex space-x-2 lg:space-x-6 overflow-hidden text-white">
+          <div className="flex flex-wrap justify-center gap-2 lg:gap-6 overflow-hidden text-white">
             {titleWords.map((word, index) => (
               <div
                 key={index}
@@ -157,12 +146,13 @@ export const Hero3DWebGL = () => {
                   opacity: index < visibleWords ? undefined : 0,
                 }}
               >
-                {word}
+                {word === "Автоматизации" ? <span className="text-red-500">{word}</span> : word}
               </div>
             ))}
           </div>
         </div>
-        <div className="text-xs md:text-xl xl:text-2xl 2xl:text-3xl mt-2 overflow-hidden text-white font-bold max-w-4xl mx-auto text-center px-4">
+
+        <div className="text-xs md:text-xl xl:text-2xl 2xl:text-3xl mt-4 overflow-hidden text-white font-bold max-w-4xl mx-auto text-center px-4">
           <div
             className={subtitleVisible ? "fade-in-subtitle" : ""}
             style={{
@@ -173,15 +163,31 @@ export const Hero3DWebGL = () => {
             {subtitle}
           </div>
         </div>
+
+        <div
+          className={`mt-6 flex flex-wrap justify-center gap-6 text-white ${subtitleVisible ? "fade-in-subtitle" : ""}`}
+          style={{ opacity: subtitleVisible ? 1 : 0 }}
+        >
+          <div className="text-center">
+            <div className="text-4xl md:text-6xl font-extrabold text-red-500 font-orbitron">₽250к</div>
+            <div className="text-xs md:text-sm text-gray-300 mt-1">средняя зарплата / мес</div>
+          </div>
+          <div className="w-px bg-red-500/30 hidden md:block" />
+          <div className="text-center">
+            <div className="text-4xl md:text-6xl font-extrabold text-red-500 font-orbitron">+47%</div>
+            <div className="text-xs md:text-sm text-gray-300 mt-1">рост вакансий за год</div>
+          </div>
+          <div className="w-px bg-red-500/30 hidden md:block" />
+          <div className="text-center">
+            <div className="text-4xl md:text-6xl font-extrabold text-red-500 font-orbitron">2 года</div>
+            <div className="text-xs md:text-sm text-gray-300 mt-1">до первой работы</div>
+          </div>
+        </div>
       </div>
 
       <Canvas
         flat
-        gl={{
-          antialias: true,
-          alpha: false,
-          powerPreference: "high-performance",
-        }}
+        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         camera={{ position: [0, 0, 1] }}
         style={{ background: "#000000" }}
       >
